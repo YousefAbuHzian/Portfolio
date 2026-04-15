@@ -274,7 +274,7 @@ class _HeroSectionState extends State<HeroSection>
 
                   // Title
                   Text(
-                    'Flutter Developer & Mobile Engineer',
+                    'Software Engineer & Flutter Developer',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontFamily: 'Inter',
@@ -293,22 +293,24 @@ class _HeroSectionState extends State<HeroSection>
 
                   const SizedBox(height: 40),
 
-                  Wrap(
-                    spacing: 12,
-                    runSpacing: 12,
-                    alignment: WrapAlignment.center,
-                    children: [
-                      GlowButton(
-                          label: 'Explore Projects', onTap: widget.onExplore),
-                      GlowButton(
-                          label: 'Get in Touch',
-                          outline: true,
-                          onTap: widget.onContact),
-                    ],
-                  )
-                      .animate()
-                      .fadeIn(delay: 1500.ms, duration: 800.ms)
-                      .slideY(begin: 0.3),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      spacing: 12,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        GlowButton(
+                            label: 'Explore Projects', onTap: widget.onExplore),
+                        GlowButton(
+                            label: 'Get in Touch',
+                            outline: true,
+                            onTap: widget.onContact),
+                      ],
+                    )
+                        .animate()
+                        .fadeIn(delay: 1500.ms, duration: 800.ms)
+                        .slideY(begin: 0.3),
+                  ),
 
                   const SizedBox(height: 60),
                   const _StatsRow(),
@@ -415,7 +417,6 @@ class _StatsRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return const SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      
       child: Wrap(
         alignment: WrapAlignment.center,
         runAlignment: WrapAlignment.center,
