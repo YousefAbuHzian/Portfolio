@@ -86,7 +86,8 @@ class ContactSection extends StatelessWidget {
         children: [
           // Giant Email
           GestureDetector(
-            onTap: () => launchUrl(Uri.parse('mailto:$email')),
+            onTap: () => launchUrl(Uri.parse('mailto:$email'),
+                mode: LaunchMode.externalApplication),
             child: MouseRegion(
               cursor: SystemMouseCursors.click,
               child: FittedBox(
@@ -122,8 +123,10 @@ class ContactSection extends StatelessWidget {
           const SizedBox(height: 48),
 
           // Action Buttons
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          Wrap(
+            alignment: WrapAlignment.center,
+            runAlignment: WrapAlignment.center,
+            runSpacing: 15,
             children: [
               _UtilityBtn(
                 icon: Icons.copy_rounded,
@@ -151,14 +154,16 @@ class ContactSection extends StatelessWidget {
                 icon: Icons.arrow_outward_rounded,
                 label: 'LinkedIn',
                 onTap: () => launchUrl(
-                    Uri.parse('https://linkedin.com/in/yousefabuhzian')),
+                    Uri.parse('https://linkedin.com/in/yousefabuhzian'),
+                    mode: LaunchMode.externalApplication),
               ),
               const SizedBox(width: 20),
               _UtilityBtn(
                 icon: Icons.code_rounded,
                 label: 'GitHub',
-                onTap: () =>
-                    launchUrl(Uri.parse('https://github.com/YousefAbuHzian')),
+                onTap: () => launchUrl(
+                    Uri.parse('https://github.com/YousefAbuHzian'),
+                    mode: LaunchMode.externalApplication),
               ),
             ],
           ),
@@ -205,6 +210,8 @@ class _UtilityBtn extends StatefulWidget {
 
 class _UtilityBtnState extends State<_UtilityBtn> {
   bool _isHovered = false;
+  bool _isPressed = false;
+  bool get _isActive => _isHovered || _isPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -213,16 +220,19 @@ class _UtilityBtnState extends State<_UtilityBtn> {
       onExit: (_) => setState(() => _isHovered = false),
       child: GestureDetector(
         onTap: widget.onTap,
+        onTapDown: (_) => setState(() => _isPressed = true),
+        onTapUp: (_) => setState(() => _isPressed = false),
+        onTapCancel: () => setState(() => _isPressed = false),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           decoration: BoxDecoration(
-            color: _isHovered
+            color: _isActive
                 ? Colors.white
                 : Colors.white.withValues(alpha: 0.04),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: _isHovered
+              color: _isActive
                   ? Colors.white
                   : Colors.white.withValues(alpha: 0.08),
             ),
@@ -233,16 +243,18 @@ class _UtilityBtnState extends State<_UtilityBtn> {
               Icon(
                 widget.icon,
                 size: 16,
-                color: _isHovered ? Colors.black : Colors.white70,
+                color: _isActive ? Colors.black : Colors.white70,
               ),
               const SizedBox(width: 10),
-              Text(
-                widget.label,
-                style: TextStyle(
-                  color: _isHovered ? Colors.black : Colors.white70,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 0.5,
+              SelectionContainer.disabled(
+                child: Text(
+                  widget.label,
+                  style: TextStyle(
+                    color: _isActive ? Colors.black : Colors.white70,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
+                  ),
                 ),
               ),
             ],

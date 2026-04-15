@@ -1,7 +1,77 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:universal_html/html.dart' as html;
 import '../theme/colors.dart';
+
+Future<void> downloadCV(BuildContext context) async {
+  // Load the PDF bytes from assets
+  try {
+    final byteData = await rootBundle.load('assets/Yousef_Abu_Hzian.pdf');
+    final bytes = byteData.buffer.asUint8List();
+
+    // Create a blob and trigger download
+    final blob = html.Blob([bytes], 'application/pdf');
+    final url = html.Url.createObjectUrlFromBlob(blob);
+
+    html.AnchorElement(href: url)
+      ..setAttribute('download', 'Yousef_Abu_Hzian_CV.pdf')
+      ..click();
+
+    html.Url.revokeObjectUrl(url);
+  } catch (e) {
+    if (context.mounted) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          backgroundColor: AppColors.bg3,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+          ),
+          title: const Row(
+            children: [
+              Icon(Icons.error_outline_rounded,
+                  color: Colors.redAccent, size: 28),
+              SizedBox(width: 12),
+              Text(
+                'Download Failed',
+                style: TextStyle(
+                  fontFamily: 'SpaceGrotesk',
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
+            ],
+          ),
+          content: const Text(
+            'We couldn\'t download the CV at this moment.\nPlease try again later.',
+            style: TextStyle(
+              fontFamily: 'Inter',
+              color: AppColors.textSecondary,
+              fontSize: 15,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              style: TextButton.styleFrom(
+                foregroundColor: AppColors.accent2,
+              ),
+              child: const Text(
+                'Close',
+                style:
+                    TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+}
 
 class PortfolioDesktopNav extends StatelessWidget {
   final VoidCallback onHome, onAbout, onProjects, onContact;
@@ -93,7 +163,7 @@ class _DownloadCVBtnState extends State<_DownloadCVBtn> {
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
       child: GestureDetector(
-        onTap: () {},
+        onTap: () => downloadCV(context),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -286,6 +356,9 @@ class _PortfolioMobileNavState extends State<PortfolioMobileNav> {
                         case 'contact':
                           widget.onContact();
                           break;
+                        case 'download':
+                          downloadCV(context);
+                          break;
                       }
                     },
                     itemBuilder: (_) => [
@@ -293,7 +366,8 @@ class _PortfolioMobileNavState extends State<PortfolioMobileNav> {
                       _menuItem('about', Icons.person_rounded, 'About'),
                       _menuItem('projects', Icons.folder_rounded, 'Projects'),
                       _menuItem('contact', Icons.send_rounded, 'Contact'),
-                      _menuItem('contact', Icons.download_rounded, 'Download CV'),
+                      _menuItem(
+                          'download', Icons.download_rounded, 'Download CV'),
                     ],
                   ),
                 ),

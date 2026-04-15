@@ -79,6 +79,8 @@ class GlowButton extends StatefulWidget {
 
 class _GlowButtonState extends State<GlowButton> {
   bool _hovered = false;
+  bool _isPressed = false;
+  bool get _isActive => _hovered || _isPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -87,6 +89,9 @@ class _GlowButtonState extends State<GlowButton> {
       onExit: (_) => setState(() => _hovered = false),
       child: GestureDetector(
         onTap: widget.onTap,
+        onTapDown: (_) => setState(() => _isPressed = true),
+        onTapUp: (_) => setState(() => _isPressed = false),
+        onTapCancel: () => setState(() => _isPressed = false),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 180),
           transform: Matrix4.translationValues(0, _hovered ? -2 : 0, 0),
@@ -94,11 +99,11 @@ class _GlowButtonState extends State<GlowButton> {
           decoration: BoxDecoration(
             color: widget.outline
                 ? Colors.transparent
-                : (_hovered ? AppColors.accent2 : AppColors.accent),
+                : (_isActive ? AppColors.accent2 : AppColors.accent),
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
               color: widget.outline
-                  ? (_hovered ? AppColors.accent : AppColors.border)
+                  ? (_isActive ? AppColors.accent : AppColors.border)
                   : Colors.transparent,
             ),
           ),
@@ -107,9 +112,9 @@ class _GlowButtonState extends State<GlowButton> {
             children: [
               AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
-                width: _hovered ? 18 : 0,
+                width: _isActive ? 18 : 0,
                 child: Opacity(
-                  opacity: _hovered ? 1 : 0,
+                  opacity: _isActive ? 1 : 0,
                   child: const Padding(
                     padding: EdgeInsets.only(right: 8),
                     child: Icon(Icons.arrow_forward_ios_rounded,

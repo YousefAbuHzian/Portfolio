@@ -193,13 +193,19 @@ class _ProjectCard extends StatefulWidget {
 
 class _ProjectCardState extends State<_ProjectCard> {
   bool _isHovered = false;
+  bool _isPressed = false;
+  bool get _isActive => _isHovered || _isPressed;
 
   @override
   Widget build(BuildContext context) {
     return ScrollReveal(
-      child: MouseRegion(
-        onEnter: (_) => setState(() => _isHovered = true),
-        onExit: (_) => setState(() => _isHovered = false),
+        child: MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: GestureDetector(
+        onTapDown: (_) => setState(() => _isPressed = true),
+        onTapUp: (_) => setState(() => _isPressed = false),
+        onTapCancel: () => setState(() => _isPressed = false),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 400),
           curve: Curves.easeOutCubic,
@@ -208,11 +214,12 @@ class _ProjectCardState extends State<_ProjectCard> {
             color: AppColors.bg2,
             borderRadius: BorderRadius.circular(32),
             border: Border.all(
-              color:
-                  _isHovered ? widget.color.withValues(alpha: 0.5) : AppColors.border,
+              color: _isActive
+                  ? widget.color.withValues(alpha: 0.5)
+                  : AppColors.border,
               width: 1,
             ),
-            boxShadow: _isHovered
+            boxShadow: _isActive
                 ? [
                     BoxShadow(
                       color: widget.color.withValues(alpha: 0.15),
@@ -231,15 +238,15 @@ class _ProjectCardState extends State<_ProjectCard> {
                 top: -50,
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 600),
-                  width: _isHovered ? 240 : 200,
-                  height: _isHovered ? 240 : 200,
+                  width: _isActive ? 240 : 200,
+                  height: _isActive ? 240 : 200,
                   decoration: BoxDecoration(
                     color: widget.color.withValues(alpha: 0.08),
                     shape: BoxShape.circle,
                   ),
                 ),
               ),
-  
+
               // Content
               Padding(
                 padding: const EdgeInsets.all(32.0),
@@ -277,24 +284,34 @@ class _ProjectCardState extends State<_ProjectCard> {
                     ),
                     const Spacer(),
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        ...widget.tags.map((tag) => Padding(
-                              padding: const EdgeInsets.only(right: 8),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withValues(alpha: 0.05),
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(
-                                      color: Colors.white.withValues(alpha: 0.1)),
-                                ),
-                                child: Text(tag,
-                                    style: const TextStyle(
-                                        color: Colors.white70, fontSize: 10)),
-                              ),
-                            )),
-                        const Spacer(),
+                        Expanded(
+                          child: Wrap(
+                            runSpacing: 8,
+                            children: [
+                              ...widget.tags.map((tag) => Padding(
+                                    padding: const EdgeInsets.only(right: 8),
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white
+                                            .withValues(alpha: 0.05),
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(
+                                            color: Colors.white
+                                                .withValues(alpha: 0.1)),
+                                      ),
+                                      child: Text(tag,
+                                          style: const TextStyle(
+                                              color: Colors.white70,
+                                              fontSize: 10)),
+                                    ),
+                                  )),
+                            ],
+                          ),
+                        ),
                         GestureDetector(
                           onTap: () async {
                             if (widget.url != null) {
@@ -337,8 +354,9 @@ class _ProjectCardState extends State<_ProjectCard> {
           ),
         ),
       ),
-    );
-}}
+    ));
+  }
+}
 
 class _ProjectModel {
   final String title;

@@ -341,6 +341,8 @@ class _BentoCard extends StatefulWidget {
 
 class _BentoCardState extends State<_BentoCard> {
   bool _isHovered = false;
+  bool _isPressed = false;
+  bool get _isActive => _isHovered || _isPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -348,20 +350,24 @@ class _BentoCardState extends State<_BentoCard> {
       child: MouseRegion(
         onEnter: (_) => setState(() => _isHovered = true),
         onExit: (_) => setState(() => _isHovered = false),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          height: widget.height,
-          width: double.infinity,
+        child: GestureDetector(
+          onTapDown: (_) => setState(() => _isPressed = true),
+          onTapUp: (_) => setState(() => _isPressed = false),
+          onTapCancel: () => setState(() => _isPressed = false),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            height: widget.height,
+            width: double.infinity,
           decoration: BoxDecoration(
             color: AppColors.bg2,
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
-              color: _isHovered
+              color: _isActive
                   ? AppColors.accent2.withValues(alpha: 0.5)
                   : AppColors.border,
               width: 1, 
             ),
-            boxShadow: _isHovered
+            boxShadow: _isActive
                 ? [
                     BoxShadow(
                       color: AppColors.accent2.withValues(alpha: 0.1),
@@ -374,6 +380,6 @@ class _BentoCardState extends State<_BentoCard> {
           child: widget.child,
         ),
       ),
-    );
+    ));
   }
 }

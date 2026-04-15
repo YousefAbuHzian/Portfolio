@@ -415,8 +415,11 @@ class _StatsRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return const SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+      
+      child: Wrap(
+        alignment: WrapAlignment.center,
+        runAlignment: WrapAlignment.center,
+        runSpacing: 15,
         children: [
           _StatItem(
               icon: Icons.code_rounded,
